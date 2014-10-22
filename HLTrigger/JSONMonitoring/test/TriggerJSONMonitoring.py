@@ -20,7 +20,8 @@ process.FastMonitoringService = cms.Service( "FastMonitoringService",
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'file:../../../../../Commissioning2014_Run224380_1000Events.root'
+#        'file:../../../../../Commissioning2014_Run224380_1000Events.root'
+        'file:../../../../../Commissioning2014_Run220672_Cosmics.root'
     )
 )
 
