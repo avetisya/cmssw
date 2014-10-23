@@ -454,15 +454,15 @@ TriggerJSONMonitoring::globalEndLuminosityBlockSummary(const edm::LuminosityBloc
   hltJsnData[DataPoint::SOURCE] = sourceHost;
   hltJsnData[DataPoint::DEFINITION] = iSummary->stHltJsd;
 
-  hltJsnData[DataPoint::DATA].append(iSummary->processed->toString());
-  hltJsnData[DataPoint::DATA].append(iSummary->hltWasRun->toString());
-  hltJsnData[DataPoint::DATA].append(iSummary->hltL1s   ->toString());
-  hltJsnData[DataPoint::DATA].append(iSummary->hltPre   ->toString());
-  hltJsnData[DataPoint::DATA].append(iSummary->hltAccept->toString());
-  hltJsnData[DataPoint::DATA].append(iSummary->hltReject->toString());
-  hltJsnData[DataPoint::DATA].append(iSummary->hltErrors->toString());
+  hltJsnData[DataPoint::DATA].append(iSummary->processed->toJsonValue());
+  hltJsnData[DataPoint::DATA].append(iSummary->hltWasRun->toJsonValue());
+  hltJsnData[DataPoint::DATA].append(iSummary->hltL1s   ->toJsonValue());
+  hltJsnData[DataPoint::DATA].append(iSummary->hltPre   ->toJsonValue());
+  hltJsnData[DataPoint::DATA].append(iSummary->hltAccept->toJsonValue());
+  hltJsnData[DataPoint::DATA].append(iSummary->hltReject->toJsonValue());
+  hltJsnData[DataPoint::DATA].append(iSummary->hltErrors->toJsonValue());
 
-  hltJsnData[DataPoint::DATA].append(iSummary->hltDatasets->toString());
+  hltJsnData[DataPoint::DATA].append(iSummary->hltDatasets->toJsonValue());
 
   std::string && result = writer.write(hltJsnData);
 
@@ -479,10 +479,10 @@ TriggerJSONMonitoring::globalEndLuminosityBlockSummary(const edm::LuminosityBloc
   l1JsnData[DataPoint::SOURCE] = sourceHost;
   l1JsnData[DataPoint::DEFINITION] = iSummary->stL1Jsd;
 
-  l1JsnData[DataPoint::DATA].append(iSummary->processed->toString());
-  l1JsnData[DataPoint::DATA].append(iSummary->L1Accept ->toString());
-  l1JsnData[DataPoint::DATA].append(iSummary->L1TechAccept ->toString()); //DS                                                                                               
-  l1JsnData[DataPoint::DATA].append(iSummary->L1Global ->toString());     //DS                                                                                               
+  l1JsnData[DataPoint::DATA].append(iSummary->processed->toJsonValue());
+  l1JsnData[DataPoint::DATA].append(iSummary->L1Accept ->toJsonValue());
+  l1JsnData[DataPoint::DATA].append(iSummary->L1TechAccept ->toJsonValue()); //DS                                                                                               
+  l1JsnData[DataPoint::DATA].append(iSummary->L1Global ->toJsonValue());     //DS                                                                                               
   result = writer.write(l1JsnData);
 
   std::stringstream ssL1JsnData;
@@ -515,7 +515,7 @@ TriggerJSONMonitoring::globalEndLuminosityBlockSummary(const edm::LuminosityBloc
     result = writer.write(hltIni);
   
     std::stringstream ssHltIni;
-    ssHltIni << "run" << iRun << "_ls0000_streamHLTRates_" << sourceHost << ".ini";
+    ssHltIni << "run" << iRun << "_ls0000_streamHLTRates_pid" << std::setfill('0') << std::setw(5) << getpid() << ".ini";
     
     std::ofstream outHltIni( monPath + ssHltIni.str() );
     outHltIni<<result;
@@ -546,7 +546,7 @@ TriggerJSONMonitoring::globalEndLuminosityBlockSummary(const edm::LuminosityBloc
     result = writer.write(l1Ini);
   
     std::stringstream ssL1Ini;
-    ssL1Ini << "run" << iRun << "_ls0000_streamL1Rates_" << sourceHost << ".ini";
+    ssL1Ini << "run" << iRun << "_ls0000_streamL1Rates_pid" << std::setfill('0') << std::setw(5) << getpid() << ".ini";
     
     std::ofstream outL1Ini( monPath + ssL1Ini.str() );
     outL1Ini<<result;
@@ -579,13 +579,14 @@ TriggerJSONMonitoring::globalEndLuminosityBlockSummary(const edm::LuminosityBloc
   hltDaqJsn[DataPoint::SOURCE] = sourceHost;
   hltDaqJsn[DataPoint::DEFINITION] = sOutDef.str();
 
-  hltDaqJsn[DataPoint::DATA].append(daqJsnProcessed_.toString());
-  hltDaqJsn[DataPoint::DATA].append(daqJsnAccepted_.toString());
-  hltDaqJsn[DataPoint::DATA].append(daqJsnErrorEvents_.toString());
-  hltDaqJsn[DataPoint::DATA].append(daqJsnRetCodeMask_.toString());
-  hltDaqJsn[DataPoint::DATA].append(hltJsnFilelist_.toString());
-  hltDaqJsn[DataPoint::DATA].append(hltJsnInputFiles_.toString());
-  hltDaqJsn[DataPoint::DATA].append(hltJsnFileAdler32_.toString());
+  hltDaqJsn[DataPoint::DATA].append((unsigned int)daqJsnProcessed_.value());
+  hltDaqJsn[DataPoint::DATA].append((unsigned int)daqJsnAccepted_.value());
+  hltDaqJsn[DataPoint::DATA].append((unsigned int)daqJsnErrorEvents_.value());
+  hltDaqJsn[DataPoint::DATA].append((unsigned int)daqJsnRetCodeMask_.value());
+  hltDaqJsn[DataPoint::DATA].append(hltJsnFilelist_.value());
+  hltDaqJsn[DataPoint::DATA].append((unsigned int)hltJsnFilesize_.value());
+  hltDaqJsn[DataPoint::DATA].append(hltJsnInputFiles_.value());
+  hltDaqJsn[DataPoint::DATA].append((unsigned int)hltJsnFileAdler32_.value());
 
   result = writer.write(hltDaqJsn);
 
@@ -613,13 +614,14 @@ TriggerJSONMonitoring::globalEndLuminosityBlockSummary(const edm::LuminosityBloc
   l1DaqJsn[DataPoint::SOURCE] = sourceHost;
   l1DaqJsn[DataPoint::DEFINITION] = sOutDef.str();
 
-  l1DaqJsn[DataPoint::DATA].append(daqJsnProcessed_.toString());
-  l1DaqJsn[DataPoint::DATA].append(daqJsnAccepted_.toString());
-  l1DaqJsn[DataPoint::DATA].append(daqJsnErrorEvents_.toString());
-  l1DaqJsn[DataPoint::DATA].append(daqJsnRetCodeMask_.toString());
-  l1DaqJsn[DataPoint::DATA].append(l1JsnFilelist_.toString());
-  l1DaqJsn[DataPoint::DATA].append(l1JsnInputFiles_.toString());
-  l1DaqJsn[DataPoint::DATA].append(l1JsnFileAdler32_.toString());
+  l1DaqJsn[DataPoint::DATA].append((unsigned int)daqJsnProcessed_.value());
+  l1DaqJsn[DataPoint::DATA].append((unsigned int)daqJsnAccepted_.value());
+  l1DaqJsn[DataPoint::DATA].append((unsigned int)daqJsnErrorEvents_.value());
+  l1DaqJsn[DataPoint::DATA].append((unsigned int)daqJsnRetCodeMask_.value());
+  l1DaqJsn[DataPoint::DATA].append(l1JsnFilelist_.value());
+  l1DaqJsn[DataPoint::DATA].append((unsigned int)l1JsnFilesize_.value());
+  l1DaqJsn[DataPoint::DATA].append(l1JsnInputFiles_.value());
+  l1DaqJsn[DataPoint::DATA].append((unsigned int)l1JsnFileAdler32_.value());
 
   result = writer.write(l1DaqJsn);
 
@@ -667,42 +669,42 @@ TriggerJSONMonitoring::writeDefJson(std::string path){
   outfile << "   \"data\" : [" << std::endl;
   outfile << "      {" ;
   outfile << " \"name\" : \"Processed\"," ;  //***                                                                                                                        
-  outfile << " type : \"integer\"," ;
+  outfile << " \"type\" : \"integer\"," ;
   outfile << " \"operation\" : \"histo\"}," << std::endl;
 
   outfile << "      {" ;
   outfile << " \"name\" : \"Path-WasRun\"," ;
-  outfile << " type : \"integer\"," ;
+  outfile << " \"type\" : \"integer\"," ;
   outfile << " \"operation\" : \"histo\"}," << std::endl;
 
   outfile << "      {" ;
   outfile << " \"name\" : \"Path-AfterL1Seed\"," ;
-  outfile << " type : \"integer\"," ;
+  outfile << " \"type\" : \"integer\"," ;
   outfile << " \"operation\" : \"histo\"}," << std::endl;
 
   outfile << "      {" ;
   outfile << " \"name\" : \"Path-AfterPrescale\"," ;
-  outfile << " type : \"integer\"," ;
+  outfile << " \"type\" : \"integer\"," ;
   outfile << " \"operation\" : \"histo\"}," << std::endl;
 
   outfile << "      {" ;
   outfile << " \"name\" : \"Path-Accepted\"," ;
-  outfile << " type : \"integer\"," ;
+  outfile << " \"type\" : \"integer\"," ;
   outfile << " \"operation\" : \"histo\"}," << std::endl;
 
   outfile << "      {" ;
   outfile << " \"name\" : \"Path-Rejected\"," ;
-  outfile << " type : \"integer\"," ;
+  outfile << " \"type\" : \"integer\"," ;
   outfile << " \"operation\" : \"histo\"}," << std::endl;
 
   outfile << "      {" ;
   outfile << " \"name\" : \"Path-Errors\"," ;
-  outfile << " type : \"integer\"," ;
+  outfile << " \"type\" : \"integer\"," ;
   outfile << " \"operation\" : \"histo\"}," << std::endl;
 
   outfile << "      {" ;
   outfile << " \"name\" : \"Dataset-Accepted\"," ;
-  outfile << " type : \"integer\"," ;
+  outfile << " \"type\" : \"integer\"," ;
   outfile << " \"operation\" : \"histo\"}" << std::endl;
 
   outfile << "   ]" << std::endl;
@@ -720,22 +722,22 @@ TriggerJSONMonitoring::writeL1DefJson(std::string path){  //DS
   outfile << "   \"data\" : [" << std::endl;
   outfile << "      {" ;
   outfile << " \"name\" : \"Processed\"," ;
-  outfile << " type : \"integer\"," ;
+  outfile << " \"type\" : \"integer\"," ;
   outfile << " \"operation\" : \"histo\"}," << std::endl;
 
   outfile << "      {" ;
   outfile << " \"name\" : \"L1-Accepted\"," ;
-  outfile << " type : \"integer\"," ;
+  outfile << " \"type\" : \"integer\"," ;
   outfile << " \"operation\" : \"histo\"}," << std::endl;
 
   outfile << "      {" ;
   outfile << " \"name\" : \"L1-TechAccepted\"," ;
-  outfile << " type : \"integer\"," ;
+  outfile << " \"type\" : \"integer\"," ;
   outfile << " \"operation\" : \"histo\"}," << std::endl;
 
   outfile << "      {" ;
   outfile << " \"name\" : \"L1-Global\"," ;
-  outfile << " type : \"integer\"," ;
+  outfile << " \"type\" : \"integer\"," ;
   outfile << " \"operation\" : \"histo\"}" << std::endl;
 
   outfile << "   ]" << std::endl;
